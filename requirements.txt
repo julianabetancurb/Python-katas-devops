@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+pytest>=7.0
+fastapi>=0.100
