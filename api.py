@@ -16,7 +16,7 @@ class DictEntry(BaseModel):
 @app.post("/dictionary/new-entry")
 def add_entry(entry: DictEntry):
     dict_store.newentry(entry.word, entry.definition)
-    return {"message": f"Added {entry.word}"}
+    return {"message": f"Added word '{entry.word}' successfully."}
 
 @app.get("/dictionary/look/{word}")
 def look_entry(word: str):
