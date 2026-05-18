@@ -29,28 +29,35 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-      - name: Instalar dependencias para Linux
+
+      - name: Instalar dependencias para Linux (imagen Lambda)
         run: |
-          pip install -r requirements.txt --target ./package --upgrade
-          find ./package -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+          docker run --rm \
+            --entrypoint pip \
+            -v "${{ github.workspace }}/package:/output" \
+            -v "${{ github.workspace }}/requirements.txt:/requirements.txt" \
+            public.ecr.aws/lambda/python:3.13 \
+            install -r /requirements.txt --target /output
+
       - name: Construir ZIP
         run: |
           cd package && zip -r ../deployment.zip . -x "*.pyc"
           cd ..
           zip -r deployment.zip api.py src/ -x "*.pyc" -x "*/__pycache__/*"
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
+
       - name: Subir a Lambda
         run: |
           aws lambda update-function-code \
             --function-name python-katas-lambda \
             --zip-file fileb://deployment.zip \
             --region us-east-2
+
       - name: Verificar deploy
         run: |
-          aws lambda wait function-updated \
-            --function-name python-katas-lambda \
-            --region us-east-2
+          aws lambda wait functio
