@@ -60,4 +60,11 @@ jobs:
 
       - name: Verificar deploy
         run: |
-          aws lambda wait functio
+          sleep 10
+          STATUS=$(aws lambda get-function-configuration \
+            --function-name python-katas-lambda \
+            --region us-east-2 \
+            --query "LastUpdateStatus" \
+            --output text)
+          echo "Estado: $STATUS"
+          if [ "$STATUS" != "Successful" ]; then exit 1; fi
