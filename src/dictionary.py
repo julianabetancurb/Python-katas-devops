@@ -8,8 +8,7 @@ class Dictionary:
     def look(self, word):
         if word in self.words:
             return self.words[word]
-        else:
-            return "cant find entry for" + word
+        return "Can't find entry for " + word
 
 
 
