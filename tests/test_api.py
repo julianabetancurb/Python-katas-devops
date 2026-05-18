@@ -4,7 +4,6 @@ from api import app
 client = TestClient(app)
 
 def test_add_and_look_dictionary():
-    # Agregar palabra
     response = client.post("/dictionary/new-entry", json={
         "word": "Apple",
         "definition": "A fruit that grows on trees"
@@ -48,6 +47,5 @@ def test_concatenate_endpoint():
     })
     assert response.json()["result"] == "aaee"
 
-    # Lista vacía
     response = client.post("/words/concatenate", json={"words": []})
     assert response.json()["result"] == ""
