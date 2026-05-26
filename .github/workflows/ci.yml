@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+      - run: pytest
+      - run: ruff check .
+      - name: Smoke test API
+        run: |
+          uvicorn api:app --host 127.0.0.1 --port 8000 &
+          sleep 3
+          curl --fail http://127.0.0.1:8000/openapi.json
